@@ -79,6 +79,9 @@ pupil_data <- data %>%
          -baseline_pupil_mean:-tepr_recency)
 
 # Cam's efficient method to rename bin/word variables
+
+  #AF: This code is a little over my head, but looks really cool! 
+
 # E.g., data currently reads ebin1w1pt4_mean
 # I just want the variable to read bin1w1
 pupil_data %<>%
@@ -132,7 +135,7 @@ plot1 <- rbind(plot1, "1st" = c(0, 0, 0))
 row_samps <- rerun(100,
       sample(seq_len(nrow(plot1)), 
              nrow(plot1), 
-             replace = TRUE))
+             replace = TRUE)) #I don't have much experience bootstrapping, so I'll have to come backto this later!
 
 # Extracting samples
 d_samps <- map_df(row_samps, ~plot1[., ], .id = "sample")
@@ -159,14 +162,14 @@ plot1 <- ggplot(plot1, aes(x = bin, y = mean_TEPR)) +
                                   9, 10, 11, 12, 13, 14, 15),
                        labels = c("0", "200", "400", "600", "800", "1,000", 
                                   "1,200", "1,400", "1,600", "1,800", "2,000", 
-                                  "2,200", "2,400", "2,600", "2,800", "3,000"),
+                                  "2,200", "2,400", "2,600", "2,800", "3,000"), #Perhaps you could reduce the number of labels to be in 500 ms increments to be more consistent with the minimalistic design
                        limits = c(0, NA)) +
     # Add text specifying when stimuli appear onscreen
     geom_text(y = 0.04,
               x = 1.4,
               color = "gray80",
               label = "      To-be-remembered
-              word appears onscreen", size = 3, fontface = 2) +
+              word appears onscreen", size = 3, fontface = 2) + #AF: This text is a little difficult to read on the plot
     # Add dotted vertical line at x = 0
     geom_vline(aes(xintercept = 0),
                color = "gray80", 
@@ -188,10 +191,12 @@ bbg_darktheme <- theme(panel.grid.major = element_line(colour = "gray20"),
                    legend.background = element_rect(fill = NA, color = NA), 
                    plot.margin = margin(10, 10, b = 20, 10),
                    plot.caption = element_text(colour = "gray80", vjust = 1), 
-                   plot.title = element_text(colour = "gray80", face = "bold"))
+                   plot.title = element_text(colour = "gray80", face = "bold")) #This is really cool--I had no idea making your own theme could be so straightforward!
 
 # Apply my theme to plot
 plot1 + bbg_darktheme
+
+#AF: Clean and clear axis labels and figure description. I'm not so familar with pupilometry, but would it be appropriate to fit a regression line to the plot? If so, I think it would make the sinosoidal shape even more easily interpreted for hte intended audience.
 
 ```
 
@@ -246,7 +251,7 @@ plot2data %<>%
   rename("WMC" = `span_group`)
 
 #Specify colors for my own color palette
-vapor_wave <- c("violetred4", "pink", "turquoise4")
+vapor_wave <- c("violetred4", "pink", "turquoise4") #AF: Vaporwave as in the music genre? If so, nice!
 
 plot2 <- ggplot(plot2data, aes(x = word, y = mean_TEPR)) +
     geom_ribbon(aes(ymin = mean_TEPR - 1.96*se_TEPR, 
@@ -270,6 +275,8 @@ plot2 <- ggplot(plot2data, aes(x = word, y = mean_TEPR)) +
                                  "6", "7", "8", "9", "10")) 
 
 plot2 + bbg_darktheme
+
+#AF: Another excellent plot! I really liked the manner in which you separated the groups by WMC. However, I think the trends would be even more apparent if you included a bolded mean within each band. Given that your theme is so dark and the WMC groups overlap, your plot may benefit from scaling back on the transparency. However, this could just be my personal preference.
 
 ```
 
@@ -330,7 +337,7 @@ plot3 <- ggplot(plot3_data, aes(x = bin, y = mean_TEPR, colour = span_group)) +
 and Recency (words 8–10) for graphical purposes only.",
            y = "Mean Pupil Diameter (mm)",
            x = "Time (ms)",
-           colour = "WMC") +
+           colour = "WMC") + #AF: Great labeling as always!
       # Adjust/Relabel x axis values to make more sense to reader
       scale_x_continuous(breaks = c(0, 2, 4, 6, 8, 10, 12, 14),
                          labels = c("0", "400", "800", "1,200", 
@@ -343,6 +350,8 @@ and Recency (words 8–10) for graphical purposes only.",
                          limits = c(-0.10, 0.15))
 
 plot3 + bbg_darktheme
+
+#AF: I like your custom theme, but I feel like my eyes strained a little bit more to detect the general paterns by group. Once again, this could be personal preference, but I would recommend comparing this visualization with a white background. Similar to the previous plot, I think a regression line may be a helpful addition to make the trends more clear. 
 
 ```
 
@@ -369,7 +378,7 @@ plot3.2 <- ggplot(plot3_data, aes(x = bin, y = mean_TEPR, colour = word)) +
       geom_point(size = 0.8) +
       # Generate outcome draws from a fitted model
       stat_smooth_draws(times = 10,
-                        aes(group = interaction(stat(.draw), colour)),
+                        aes(group = interaction(stat(.draw), colour)), #AF: Nice!
                         size = 0.8) +
       scale_color_manual(values = vapor_wave) +
       #scale_color_carto_d(palette = "Burg") +
@@ -404,6 +413,8 @@ and Recency (words 8–10) for graphical purposes only.",
                          limits = c(-0.10, 0.15))
 
 plot3.2 + bbg_darktheme
+
+#AF: I like your dancing plot! It's very cleanly labeled and cool to look it! While you did a great job tilting the values on the x-axis, I think that there is still a bit of clutter. Perhaps, you could reduce the time break to 500 ms increments?
 
 ```
 
@@ -462,7 +473,7 @@ plot4 <- strategy_data %>%
       geom_col(width = 0.60, 
                alpha = 0.6) +
       geom_errorbar(aes(ymin = mean_acc + qnorm(0.025)*se_acc, 
-                          ymax = mean_acc + qnorm(0.975)*se_acc),
+                          ymax = mean_acc + qnorm(0.975)*se_acc), #AF: I like your consistent, clean formatting!
                           color = "gray40",
                           width = 0.4, 
                           size = 0.8) +
@@ -496,5 +507,6 @@ or passive reading) than when they report using these strategies.") +
 # Applying my theme to plot
 plot4 + bbg_darktheme
 
+#AF: Since the plot is intended for the general public, you might consider removing the error bars. However, I like the percent values added on top for added clarity. Also, I am not the biggest fan of the two colors used, but admittedly I'm a big Okabe Ito fan.
 ```
 
